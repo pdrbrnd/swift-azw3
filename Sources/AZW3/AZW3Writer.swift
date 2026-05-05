@@ -9,6 +9,16 @@ public struct AZW3Writer: Sendable {
         self.manifest = manifest
     }
 
+    /// 15-char hex string that this writer stamps into EXTH 113 (ASIN).
+    /// Useful for callers writing companion files keyed by this value —
+    /// e.g. Kindle's
+    /// `system/thumbnails/thumbnail_<ASIN>_<CDETYPE>_portrait.jpg`.
+    /// Deterministic in `manifest`; a writer constructed from the same
+    /// manifest twice will return the same string.
+    public var asin: String {
+        encodeASIN(stableID(for: manifest))
+    }
+
     public func encode() -> Data {
         // 1. Render the combined text and figure out chunk + chapter geometry.
         let (text, chunks, chapters) = Markup.chaptersToText(manifest)
